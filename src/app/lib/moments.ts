@@ -55,6 +55,15 @@ export function getMomentById(id: string): Moment | undefined {
   return getMoments().find((m) => m.id === id);
 }
 
+export function getMomentsByDate(date: Date): Moment[] {
+  const moments = getMoments();
+  const targetDateStr = date.toISOString().split('T')[0];
+  return moments.filter((m) => {
+    const momentDateStr = m.timestamp.split('T')[0];
+    return momentDateStr === targetDateStr;
+  }).sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
+}
+
 export function updateMoment(id: string, updates: Partial<Omit<Moment, 'id' | 'createdAt'>>): Moment | undefined {
   const moments = getMoments();
   const index = moments.findIndex((m) => m.id === id);

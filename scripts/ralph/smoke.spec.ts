@@ -120,3 +120,13 @@ test('entity naming modal has all required fields', async ({ page }) => {
   await expect(page.getByTestId('entity-modal-save')).toBeVisible();
   await expect(page.getByTestId('entity-modal-cancel')).toBeVisible();
 });
+
+test('timeline page has date picker and navigation', async ({ page }) => {
+  await page.goto('http://127.0.0.1:3000/timeline');
+  
+  await expect(page.getByTestId('date-display')).toBeVisible();
+  await expect(page.getByTestId('date-picker')).toBeVisible();
+  await expect(page.getByTestId('prev-day-button')).toBeVisible();
+  await expect(page.getByTestId('next-day-button')).toBeVisible();
+  await expect(page.getByTestId('empty-state')).toBeVisible();
+});
