@@ -1,9 +1,17 @@
+export interface GpsLocation {
+  latitude: number;
+  longitude: number;
+  accuracy: number;
+  placeLabel: string | null;
+}
+
 export interface Moment {
   id: string;
   photoDataUrl: string;
   timestamp: string;
   timestampLocal: string;
   createdAt: number;
+  gps: GpsLocation | null;
 }
 
 const MOMENTS_KEY = 'dogtracer_moments';
@@ -33,7 +41,7 @@ export function getMomentById(id: string): Moment | undefined {
   return getMoments().find((m) => m.id === id);
 }
 
-export function createMoment(photoDataUrl: string): Moment {
+export function createMoment(photoDataUrl: string, gps: GpsLocation | null = null): Moment {
   const now = new Date();
   return {
     id: generateId(),
@@ -41,5 +49,6 @@ export function createMoment(photoDataUrl: string): Moment {
     timestamp: now.toISOString(),
     timestampLocal: now.toLocaleString(),
     createdAt: now.getTime(),
+    gps,
   };
 }
