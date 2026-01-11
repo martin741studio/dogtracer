@@ -9,6 +9,8 @@
 - Use "use client" directive for client components using hooks like usePathname
 - For Playwright tests, do NOT use `networkidle` wait - Next.js HMR keeps connections open
 - Use `data-testid` attributes for test selectors
+- For GPS location on web, use navigator.geolocation API (not React Native location APIs)
+- For reverse geocoding, use Nominatim OpenStreetMap API (free, no API key needed)
 
 ## Learnings
 
@@ -30,6 +32,23 @@ Thread: https://ampcode.com/threads/T-019bad2a-e26b-71eb-b27d-f6c0dd4b9379
   - Active tab uses amber-600 color scheme
   - Using Heroicons-style SVG icons for navigation
   - Browser test at scripts/ralph/smoke.spec.ts checks homepage loads with title
+---
+
+## 2026-01-11 - US-003
+Thread: https://ampcode.com/threads/T-019bad34-5020-7315-8474-cdaf405a7d82
+- Implemented GPS location capture for moments with reverse geocoding
+- Files changed:
+  - src/app/lib/moments.ts (added GpsLocation interface, updated Moment interface and createMoment function)
+  - src/app/lib/location.ts (new file - geolocation and reverse geocoding utilities)
+  - src/app/components/CameraButton.tsx (integrated location capture, added loading state, shows place label in confirmation)
+- **Learnings for future iterations:**
+  - Use navigator.geolocation.getCurrentPosition() for web browser location
+  - Nominatim OpenStreetMap reverse geocoding is free and doesn't need API key
+  - GpsLocation stores: latitude, longitude, accuracy (meters), placeLabel (nullable)
+  - Location is captured in parallel with photo reading for better performance
+  - Handle location gracefully when unavailable (gps field is null)
+  - Button shows loading spinner while capturing location
+  - Confirmation message includes place label when available
 ---
 
 ## 2026-01-11 - US-002
