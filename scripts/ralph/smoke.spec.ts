@@ -307,3 +307,61 @@ test('overview card displays activity stats when moments exist', async ({ page }
   await expect(page.getByTestId('active-time')).toBeVisible();
   await expect(page.getByTestId('rest-time')).toBeVisible();
 });
+
+test('timeline highlights card displays session highlights', async ({ page }) => {
+  await page.goto('http://127.0.0.1:3000/timeline');
+  
+  await page.evaluate(() => {
+    const now = new Date();
+    const thirtyMinsAgo = new Date(now.getTime() - 30 * 60 * 1000);
+    
+    localStorage.setItem('dogtracer_moments', JSON.stringify([
+      {
+        id: 'moment-highlight-1',
+        photoDataUrl: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==',
+        timestamp: thirtyMinsAgo.toISOString(),
+        timestampLocal: thirtyMinsAgo.toLocaleString(),
+        createdAt: thirtyMinsAgo.getTime(),
+        gps: { latitude: 37.7749, longitude: -122.4194, accuracy: 10, placeLabel: 'Golden Gate Park' },
+        tags: ['walk', 'social'],
+        notes: '',
+        mood: 'calm',
+        moodConfidence: 85,
+        entityIds: [],
+        sessionId: null
+      },
+      {
+        id: 'moment-highlight-2',
+        photoDataUrl: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==',
+        timestamp: now.toISOString(),
+        timestampLocal: now.toLocaleString(),
+        createdAt: now.getTime(),
+        gps: { latitude: 37.7749, longitude: -122.4194, accuracy: 10, placeLabel: 'Golden Gate Park' },
+        tags: ['walk'],
+        notes: '',
+        mood: 'playful',
+        moodConfidence: 90,
+        entityIds: [],
+        sessionId: null
+      }
+    ]));
+    localStorage.setItem('dogtracer_dog_profile', JSON.stringify({
+      id: 'profile_test',
+      name: 'Buddy',
+      age: '3 years',
+      temperament: ['social', 'curious', 'high-energy'],
+      triggers: [],
+      goals: [],
+      createdAt: Date.now(),
+      updatedAt: Date.now()
+    }));
+  });
+  
+  await page.reload();
+  
+  await expect(page.getByTestId('timeline-highlights-card')).toBeVisible();
+  await expect(page.getByTestId('timeline-highlights-title')).toContainText('Timeline Highlights');
+  await expect(page.getByTestId('timeline-highlight').first()).toBeVisible();
+  await expect(page.getByTestId('highlight-time-range').first()).toBeVisible();
+  await expect(page.getByTestId('highlight-description').first()).toBeVisible();
+});
