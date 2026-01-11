@@ -5,7 +5,10 @@
 - Uses Tailwind CSS v4 for styling
 - App router in src/app/ directory
 - Components go in src/app/components/
+- Utilities/lib files go in src/app/lib/
 - Use "use client" directive for client components using hooks like usePathname
+- For Playwright tests, do NOT use `networkidle` wait - Next.js HMR keeps connections open
+- Use `data-testid` attributes for test selectors
 
 ## Learnings
 
@@ -27,4 +30,21 @@ Thread: https://ampcode.com/threads/T-019bad2a-e26b-71eb-b27d-f6c0dd4b9379
   - Active tab uses amber-600 color scheme
   - Using Heroicons-style SVG icons for navigation
   - Browser test at scripts/ralph/smoke.spec.ts checks homepage loads with title
+---
+
+## 2026-01-11 - US-002
+Thread: https://ampcode.com/threads/T-019bad2f-a139-744a-b3d8-6ee6bce5dc96
+- Implemented moment capture with photo and timestamp
+- Files changed:
+  - src/app/page.tsx (added CameraButton component)
+  - src/app/components/CameraButton.tsx (new camera capture component with confirmation feedback)
+  - src/app/lib/moments.ts (new local storage utility for moments)
+  - scripts/ralph/smoke.spec.ts (added camera button visibility test, fixed networkidle issue)
+- **Learnings for future iterations:**
+  - Use `capture="environment"` attribute on file input for mobile camera access
+  - For photo capture on web, use file input with `accept="image/*"` - works on both desktop and mobile
+  - Store photos as base64 data URLs in localStorage for simplicity (IndexedDB for larger apps)
+  - Moment interface: id, photoDataUrl, timestamp (ISO), timestampLocal, createdAt
+  - Playwright tests fail with `networkidle` on Next.js dev server due to HMR - use default `load` wait
+  - Added `data-testid="camera-button"` for test selectors
 ---

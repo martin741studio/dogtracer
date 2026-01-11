@@ -1,3 +1,5 @@
+import CameraButton from "./components/CameraButton";
+
 export default function Home() {
   return (
     <div className="flex min-h-screen flex-col items-center justify-center px-4">
@@ -9,6 +11,14 @@ export default function Home() {
           Document your dog&apos;s day with photos and insights
         </p>
       </div>
+
+      <div className="mt-12">
+        <CameraButton />
+      </div>
+
+      <p className="mt-6 text-sm text-zinc-500 dark:text-zinc-400">
+        Tap the camera to capture a moment
+      </p>
     </div>
   );
 }
