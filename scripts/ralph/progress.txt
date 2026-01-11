@@ -130,3 +130,22 @@ Thread: https://ampcode.com/threads/T-019bad3d-1b5a-7148-86c8-fdc6136b0792
   - getPendingDetectionCount() returns number of queued items for UI sync indicator
   - Import from detection.ts or db.ts for detection types and functions
 ---
+
+## 2026-01-11 - US-007
+Thread: https://ampcode.com/threads/T-019bad40-18e1-714d-a600-6e63af1ea005
+- Implemented dog labeling for detected entities with visual indicators on photos
+- Files changed:
+  - src/app/lib/labeling.ts (new - dog label utilities with displayLabel resolution)
+  - src/app/components/DetectionOverlay.tsx (new - visual bounding box overlay for detected dogs)
+  - src/app/components/MomentCard.tsx (new - moment display card with detection overlay)
+  - src/app/lib/db.ts (added labeling module export)
+  - scripts/ralph/smoke.spec.ts (added detection overlay test)
+- **Learnings for future iterations:**
+  - Primary dog uses [PRIMARY_DOG] label, shows amber color (#f59e0b) with ⭐ star indicator
+  - Other dogs use [OTHER_DOG_1], [OTHER_DOG_2] labels with blue color (#3b82f6)
+  - getDogDisplayLabel() resolves labels to profile name or entity name if available
+  - DetectionOverlay uses CSS percentage-based positioning from normalized bounding box coords
+  - MomentCard fetches detection results and renders DetectionOverlay on top of photo
+  - LabeledEntity extends DetectedEntity with displayLabel and optional entityId
+  - Use data-testid="primary-dog-indicator" and "other-dog-indicator" for test selectors
+---
