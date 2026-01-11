@@ -716,3 +716,117 @@ test('recommendations card displays actionable recommendations with priority', a
   await expect(page.getByTestId('recommendation-description').first()).toBeVisible();
   await expect(page.getByTestId('recommendation-priority').first()).toBeVisible();
 });
+
+test('encounters page shows all named entities with filter', async ({ page }) => {
+  await page.goto('http://127.0.0.1:3000/encounters');
+  
+  await page.evaluate(() => {
+    const now = new Date();
+    const yesterday = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+    
+    localStorage.setItem('dogtracer_entities', JSON.stringify([
+      {
+        id: 'entity-dog-buddy',
+        type: 'dog',
+        name: 'Buddy',
+        notes: 'Friendly golden retriever',
+        createdAt: yesterday.getTime(),
+        updatedAt: yesterday.getTime(),
+        metadata: {
+          breed: 'Golden Retriever',
+          sex: 'male',
+          size: 'large',
+          relationship: 'friend',
+          isPrimary: false
+        }
+      },
+      {
+        id: 'entity-human-sarah',
+        type: 'human',
+        name: 'Sarah',
+        notes: 'Lives next door',
+        createdAt: yesterday.getTime(),
+        updatedAt: yesterday.getTime(),
+        metadata: {
+          relationship: 'neighbor'
+        }
+      }
+    ]));
+
+    localStorage.setItem('dogtracer_moments', JSON.stringify([
+      {
+        id: 'moment-enc-1',
+        photoDataUrl: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==',
+        timestamp: now.toISOString(),
+        timestampLocal: now.toLocaleString(),
+        createdAt: now.getTime(),
+        gps: null,
+        tags: ['walk'],
+        notes: '',
+        mood: 'calm',
+        moodConfidence: 80,
+        entityIds: ['entity-dog-buddy', 'entity-human-sarah'],
+        sessionId: null
+      },
+      {
+        id: 'moment-enc-2',
+        photoDataUrl: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==',
+        timestamp: yesterday.toISOString(),
+        timestampLocal: yesterday.toLocaleString(),
+        createdAt: yesterday.getTime(),
+        gps: null,
+        tags: ['play'],
+        notes: '',
+        mood: 'playful',
+        moodConfidence: 90,
+        entityIds: ['entity-dog-buddy'],
+        sessionId: null
+      }
+    ]));
+  });
+  
+  await page.reload();
+  
+  await expect(page.getByTestId('encounters-title')).toContainText('Encounters');
+  await expect(page.getByTestId('encounters-filter')).toBeVisible();
+  await expect(page.getByTestId('encounters-list')).toBeVisible();
+  await expect(page.getByTestId('encounter-entity-card')).toHaveCount(2);
+  
+  // Test filter - dogs only
+  await page.getByTestId('filter-dogs').click();
+  await expect(page.getByTestId('encounter-entity-card')).toHaveCount(1);
+  await expect(page.getByTestId('encounter-entity-name')).toContainText('Buddy');
+  await expect(page.getByTestId('encounter-count')).toContainText('2 moments');
+  await expect(page.getByTestId('encounter-entity-relationship')).toContainText('Friend');
+  
+  // Test filter - humans only
+  await page.getByTestId('filter-humans').click();
+  await expect(page.getByTestId('encounter-entity-card')).toHaveCount(1);
+  await expect(page.getByTestId('encounter-entity-name')).toContainText('Sarah');
+  await expect(page.getByTestId('encounter-count')).toContainText('1 moment');
+  await expect(page.getByTestId('encounter-entity-relationship')).toContainText('Neighbor');
+  
+  // Test clicking on entity card opens moments modal
+  await page.getByTestId('filter-all').click();
+  await page.getByTestId('encounter-entity-card').first().click();
+  await expect(page.getByTestId('encounter-moments-modal')).toBeVisible();
+  await expect(page.getByTestId('encounter-moment-thumbnail')).toHaveCount(2);
+  
+  // Close modal
+  await page.getByTestId('close-encounter-moments').click();
+  await expect(page.getByTestId('encounter-moments-modal')).not.toBeVisible();
+});
+
+test('encounters page shows empty state when no entities', async ({ page }) => {
+  await page.goto('http://127.0.0.1:3000/encounters');
+  
+  await page.evaluate(() => {
+    localStorage.removeItem('dogtracer_entities');
+    localStorage.removeItem('dogtracer_moments');
+  });
+  
+  await page.reload();
+  
+  await expect(page.getByTestId('encounters-title')).toContainText('Encounters');
+  await expect(page.getByTestId('empty-state')).toBeVisible();
+});
