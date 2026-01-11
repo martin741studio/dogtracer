@@ -55,6 +55,17 @@ export function getMomentById(id: string): Moment | undefined {
   return getMoments().find((m) => m.id === id);
 }
 
+export function updateMoment(id: string, updates: Partial<Omit<Moment, 'id' | 'createdAt'>>): Moment | undefined {
+  const moments = getMoments();
+  const index = moments.findIndex((m) => m.id === id);
+  if (index === -1) return undefined;
+  
+  const updatedMoment = { ...moments[index], ...updates };
+  moments[index] = updatedMoment;
+  localStorage.setItem(MOMENTS_KEY, JSON.stringify(moments));
+  return updatedMoment;
+}
+
 export function createMoment(
   photoDataUrl: string, 
   gps: GpsLocation | null = null,

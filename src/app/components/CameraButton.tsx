@@ -3,6 +3,7 @@
 import { useRef, useState } from "react";
 import { createMoment, saveMoment, type GpsLocation, type MomentTag } from "../lib/moments";
 import { getLocationWithLabel } from "../lib/location";
+import { processDetection, getPendingDetectionCount } from "../lib/detection";
 import TagsModal from "./TagsModal";
 
 interface PendingCapture {
@@ -47,7 +48,7 @@ export default function CameraButton() {
     }
   };
 
-  const handleSaveMoment = (tags: MomentTag[], notes: string) => {
+  const handleSaveMoment = async (tags: MomentTag[], notes: string) => {
     if (!pendingCapture) return;
     
     const moment = createMoment(pendingCapture.photoDataUrl, pendingCapture.gps, tags, notes);
@@ -59,6 +60,10 @@ export default function CameraButton() {
     setPendingCapture(null);
     setShowConfirmation(true);
     setTimeout(() => setShowConfirmation(false), 3000);
+    
+    processDetection(moment.id, moment.photoDataUrl).catch((err) => {
+      console.error('Detection failed:', err);
+    });
   };
 
   const handleCancelCapture = () => {
