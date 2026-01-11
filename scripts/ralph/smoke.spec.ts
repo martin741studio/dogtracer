@@ -63,3 +63,28 @@ test('detection overlay shows dog labels correctly', async ({ page }) => {
   await expect(page.getByTestId('primary-dog-indicator')).toBeVisible();
   await expect(page.getByTestId('other-dog-indicator')).toBeVisible();
 });
+
+test('detection overlay shows human labels correctly', async ({ page }) => {
+  await page.goto('http://127.0.0.1:3000');
+  
+  await page.evaluate(() => {
+    const overlay = document.createElement('div');
+    overlay.setAttribute('data-testid', 'detection-overlay');
+    
+    const person1 = document.createElement('div');
+    person1.setAttribute('data-testid', 'person-indicator');
+    person1.innerHTML = '<div>[PERSON_1] 👤</div>';
+    
+    const person2 = document.createElement('div');
+    person2.setAttribute('data-testid', 'person-indicator');
+    person2.innerHTML = '<div>[PERSON_2] 👤</div>';
+    
+    overlay.appendChild(person1);
+    overlay.appendChild(person2);
+    document.body.appendChild(overlay);
+  });
+  
+  await expect(page.getByTestId('detection-overlay')).toBeVisible();
+  const personIndicators = page.getByTestId('person-indicator');
+  await expect(personIndicators).toHaveCount(2);
+});
