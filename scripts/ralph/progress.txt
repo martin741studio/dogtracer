@@ -363,3 +363,26 @@ Thread: https://ampcode.com/threads/T-019bad6f-5ee2-7648-982e-c9f75f420d87
   - Summary tone colors applied to card header (same as other summary cards)
   - Test data-testid patterns: recommendations-card, recommendations-title, recommendations-count, recommendation, recommendation-title, recommendation-description, recommendation-priority, recommendation-priority-icon
 ---
+
+## 2026-01-11 - US-020
+Thread: https://ampcode.com/threads/T-019bad72-9426-71de-96b3-9ff3cc92514e
+- Implemented generate summary command with button on home and timeline screens
+- Files changed:
+  - src/app/lib/settings.ts (new - settings storage for auto-generate time)
+  - src/app/components/DailySummaryModal.tsx (new - full summary modal with all sections)
+  - src/app/components/AutoGenerateSettings.tsx (new - toggle and time picker for auto-generate)
+  - src/app/page.tsx (added generate summary button, auto-generate check on load)
+  - src/app/timeline/page.tsx (added generate summary button in header)
+  - src/app/profile/page.tsx (added auto-generate settings section)
+  - src/app/lib/db.ts (added settings module export)
+  - scripts/ralph/smoke.spec.ts (added 5 new tests for summary functionality)
+- **Learnings for future iterations:**
+  - DailySummaryModal is a scrollable full-screen modal displaying all summary sections
+  - Auto-generate settings stored in settings.ts with AppSettings interface
+  - shouldAutoGenerate() checks enabled flag, configured time, and last run date
+  - markAutoGenerateRun() prevents duplicate generation on same day
+  - Home page checks for auto-generate on mount and opens modal if conditions met
+  - Timeline page has generate button in sticky header (only visible when moments exist)
+  - Profile page shows AutoGenerateSettings below profile info, before delete button
+  - Test data-testid patterns: generate-summary-button, daily-summary-modal, summary-modal-title, summary-modal-date, close-summary-modal, no-moments-message, auto-generate-settings, auto-generate-toggle, auto-generate-time-section, auto-generate-time-input
+---
