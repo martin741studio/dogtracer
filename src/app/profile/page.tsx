@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import ProfileQuestionnaire from "../components/ProfileQuestionnaire";
 import AutoGenerateSettings from "../components/AutoGenerateSettings";
 import { type DogProfile, getProfile, deleteProfile } from "../lib/profile";
+import { exportAsJson, getExportDataSummary } from "../lib/export";
 
 export default function Profile() {
   const [profile, setProfile] = useState<DogProfile | null>(null);
@@ -128,6 +129,20 @@ export default function Profile() {
 
         <div className="mt-6">
           <AutoGenerateSettings />
+        </div>
+
+        <div className="mt-6 rounded-xl bg-white p-4 shadow-lg">
+          <h3 className="mb-3 text-sm font-medium text-gray-700">Data Export</h3>
+          <button
+            onClick={() => exportAsJson()}
+            className="w-full rounded-lg bg-blue-500 px-4 py-2 text-sm font-medium text-white hover:bg-blue-600"
+            data-testid="export-json-button"
+          >
+            📥 Export as JSON
+          </button>
+          <p className="mt-2 text-xs text-gray-500">
+            Export all moments, sessions, entities, and profile data as a JSON file.
+          </p>
         </div>
 
         <div className="mt-6">

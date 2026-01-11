@@ -830,3 +830,24 @@ test('encounters page shows empty state when no entities', async ({ page }) => {
   await expect(page.getByTestId('encounters-title')).toContainText('Encounters');
   await expect(page.getByTestId('empty-state')).toBeVisible();
 });
+
+test('profile page has export as JSON button', async ({ page }) => {
+  await page.goto('http://127.0.0.1:3000/profile');
+  
+  await page.evaluate(() => {
+    localStorage.setItem('dogtracer_dog_profile', JSON.stringify({
+      id: 'profile_test',
+      name: 'Luna',
+      age: '2 years',
+      temperament: ['social'],
+      triggers: [],
+      goals: [],
+      createdAt: Date.now(),
+      updatedAt: Date.now()
+    }));
+  });
+  await page.reload();
+  
+  await expect(page.getByTestId('export-json-button')).toBeVisible();
+  await expect(page.getByTestId('export-json-button')).toContainText('Export as JSON');
+});

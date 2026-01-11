@@ -8,4 +8,5 @@ export * from './mood';
 export * from './summary';
 export * from './settings';
 export * from './encounters';
+export * from './export';
 export { runMigrations, getDbVersion, getCurrentSchemaVersion } from './migrations';

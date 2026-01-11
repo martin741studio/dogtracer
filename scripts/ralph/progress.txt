@@ -404,3 +404,20 @@ Thread: https://ampcode.com/threads/T-019bad77-0951-75d2-8ba4-9b591c20ec70
   - Relationship labels differ from outcome labels (Friend vs friend, Neighbor vs neighbor)
   - Test data-testid patterns: encounters-title, encounters-filter, encounters-list, encounter-entity-card, encounter-entity-name, encounter-entity-relationship, encounter-count, last-seen, encounter-moments-modal, encounter-moment-thumbnail, close-encounter-moments, empty-state
 ---
+
+## 2026-01-11 - US-022
+Thread: https://ampcode.com/threads/T-019bad7b-1a4c-769b-ba81-bb6f8648c62b
+- Implemented JSON export functionality for backup and analysis
+- Files changed:
+  - src/app/lib/export.ts (new - ExportData interface, generateExportData, exportAsJson, getExportDataSummary)
+  - src/app/lib/db.ts (added export module re-export)
+  - src/app/profile/page.tsx (added Export as JSON button in Data Export section)
+  - scripts/ralph/smoke.spec.ts (added test for export JSON button)
+- **Learnings for future iterations:**
+  - ExportData includes version string for future compatibility
+  - exportAsJson() uses Blob + URL.createObjectURL for browser file download
+  - Filename pattern: {DogName}_export_{YYYY-MM-DD}.json (dog name from profile, spaces replaced with underscores)
+  - Export includes: version, exportedAt timestamp, profile, moments, sessions, entities
+  - Button placed in profile page below auto-generate settings, above delete button
+  - Test data-testid: export-json-button
+---
