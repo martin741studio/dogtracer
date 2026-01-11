@@ -14,6 +14,7 @@
 - Database modules in src/app/lib/: moments.ts, entities.ts, sessions.ts, profile.ts
 - Use db.ts as unified export for all database types and functions
 - migrations.ts handles schema versioning with incremental migrations
+- Summary engine in summary.ts: generateDailySummary(date) returns DailySummary with tone-based templates
 
 ## Learnings
 
@@ -257,4 +258,21 @@ Thread: https://ampcode.com/threads/T-019bad55-16c2-7359-b146-f94550782841
   - Delete button removes profile and shows questionnaire again
   - Test data-testid patterns: profile-questionnaire, dog-name-input, dog-age-input, temperament-buttons
   - Profile view uses: profile-view, profile-dog-name, profile-dog-age, profile-temperament, profile-triggers, profile-goals
+---
+
+## 2026-01-11 - US-014
+Thread: https://ampcode.com/threads/T-019bad58-a51d-75dc-a687-94d02dedac85
+- Implemented rule-based template engine for daily summary generation
+- Files changed:
+  - src/app/lib/summary.ts (new - complete template engine with all sections)
+  - src/app/lib/db.ts (added summary module export)
+- **Learnings for future iterations:**
+  - Template engine generates all 5 sections: Overview, Timeline Highlights, Social Map, Behavior Insights, Recommendations
+  - SummaryTone inferred from dog temperament: upbeat (social/curious), calm (anxious/reactive), protective
+  - Each session type has 3 tone-specific description templates
+  - Overview tracks: totalMoments, sessionCounts, activeMinutes, restMinutes, topMood, moodShifts
+  - BehaviorInsight types: pattern, trigger, win - detected from moment tags and moods
+  - Recommendations prioritized as high/medium/low based on goals and triggers
+  - generateDailySummary(date) is main entry point - returns complete DailySummary object
+  - Import from summary.ts or db.ts for summary types and functions
 ---
