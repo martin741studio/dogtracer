@@ -293,3 +293,20 @@ Thread: https://ampcode.com/threads/T-019bad5b-bd40-707c-b705-b3ac7addf5c6
   - Mood shifts show first 3 with time and emoji arrows (from → to)
   - Test data-testid patterns: overview-card, overview-title, total-moments, total-sessions, active-time, rest-time
 ---
+
+## 2026-01-11 - US-016
+Thread: https://ampcode.com/threads/T-019bad5f-9703-735d-9fdb-78369a41c5cf
+- Implemented Timeline Highlights section for daily summary display
+- Files changed:
+  - src/app/components/TimelineHighlightsCard.tsx (new - session highlights with photos, description, interactions, tags)
+  - src/app/timeline/page.tsx (integrated TimelineHighlightsCard with timelineHighlights state)
+  - scripts/ralph/smoke.spec.ts (added test for timeline highlights card)
+- **Learnings for future iterations:**
+  - TimelineHighlightsCard displays below OverviewCard on timeline page
+  - Each highlight shows: session type icon, time range, place label, 1-3 key photos, tone-based description
+  - Interactions listed as entity names from moment.entityIds
+  - Tags from behavior flags: win (✅), trigger (⚠️), social (🐾), training (🧠), food (🥣), rest (💤)
+  - Summary tone colors applied to card header: upbeat=amber, calm=blue, protective=purple
+  - Click on photo in highlight opens MomentDetailModal via onMomentClick callback
+  - Test data-testid patterns: timeline-highlights-card, timeline-highlights-title, timeline-highlight, highlight-time-range, highlight-description, highlight-place-label, highlight-photo, highlight-interactions, highlight-tags, tag-{label}
+---
