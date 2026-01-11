@@ -248,3 +248,62 @@ test('profile page shows profile view after saving profile', async ({ page }) =>
   await expect(page.getByTestId('profile-goals')).toBeVisible();
   await expect(page.getByTestId('edit-profile-button')).toBeVisible();
 });
+
+test('overview card displays activity stats when moments exist', async ({ page }) => {
+  await page.goto('http://127.0.0.1:3000/timeline');
+  
+  await page.evaluate(() => {
+    const now = new Date();
+    const thirtyMinsAgo = new Date(now.getTime() - 30 * 60 * 1000);
+    
+    localStorage.setItem('dogtracer_moments', JSON.stringify([
+      {
+        id: 'moment-1',
+        photoDataUrl: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==',
+        timestamp: thirtyMinsAgo.toISOString(),
+        timestampLocal: thirtyMinsAgo.toLocaleString(),
+        createdAt: thirtyMinsAgo.getTime(),
+        gps: null,
+        tags: ['walk'],
+        notes: '',
+        mood: 'calm',
+        moodConfidence: 85,
+        entityIds: [],
+        sessionId: null
+      },
+      {
+        id: 'moment-2',
+        photoDataUrl: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==',
+        timestamp: now.toISOString(),
+        timestampLocal: now.toLocaleString(),
+        createdAt: now.getTime(),
+        gps: null,
+        tags: ['play'],
+        notes: '',
+        mood: 'playful',
+        moodConfidence: 90,
+        entityIds: [],
+        sessionId: null
+      }
+    ]));
+    localStorage.setItem('dogtracer_dog_profile', JSON.stringify({
+      id: 'profile_test',
+      name: 'Luna',
+      age: '2 years',
+      temperament: ['social', 'curious'],
+      triggers: [],
+      goals: [],
+      createdAt: Date.now(),
+      updatedAt: Date.now()
+    }));
+  });
+  
+  await page.reload();
+  
+  await expect(page.getByTestId('overview-card')).toBeVisible();
+  await expect(page.getByTestId('overview-title')).toContainText("Luna's Day at a Glance");
+  await expect(page.getByTestId('total-moments')).toBeVisible();
+  await expect(page.getByTestId('total-sessions')).toBeVisible();
+  await expect(page.getByTestId('active-time')).toBeVisible();
+  await expect(page.getByTestId('rest-time')).toBeVisible();
+});

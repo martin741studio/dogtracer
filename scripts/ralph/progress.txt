@@ -276,3 +276,20 @@ Thread: https://ampcode.com/threads/T-019bad58-a51d-75dc-a687-94d02dedac85
   - generateDailySummary(date) is main entry point - returns complete DailySummary object
   - Import from summary.ts or db.ts for summary types and functions
 ---
+
+## 2026-01-11 - US-015
+Thread: https://ampcode.com/threads/T-019bad5b-bd40-707c-b705-b3ac7addf5c6
+- Implemented Overview Section UI for daily summary on timeline page
+- Files changed:
+  - src/app/components/OverviewCard.tsx (new - displays total moments, sessions, active/rest time, session breakdown, top mood, mood shifts)
+  - src/app/timeline/page.tsx (integrated OverviewCard, added generateDailySummary call)
+  - scripts/ralph/smoke.spec.ts (added test for overview card)
+- **Learnings for future iterations:**
+  - OverviewCard displays at top of timeline when moments exist for selected day
+  - Card uses tone-specific background colors: upbeat=amber, calm=blue, protective=purple
+  - formatDuration() helper converts minutes to "Xh Ym" format
+  - Session breakdown shows emoji-tagged pills for each session type
+  - Top mood displays with emoji and confidence count
+  - Mood shifts show first 3 with time and emoji arrows (from → to)
+  - Test data-testid patterns: overview-card, overview-title, total-moments, total-sessions, active-time, rest-time
+---
