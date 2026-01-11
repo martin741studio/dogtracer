@@ -240,3 +240,21 @@ Thread: https://ampcode.com/threads/T-019bad50-ecc0-74ba-8f54-f0e55ad985e0
   - Mood display uses data-testid="mood-display" for test selectors
   - Mood override buttons use data-testid="mood-button-{mood}" pattern
 ---
+
+## 2026-01-11 - US-013
+Thread: https://ampcode.com/threads/T-019bad55-16c2-7359-b146-f94550782841
+- Implemented dog character profile questionnaire with full edit capability
+- Files changed:
+  - src/app/components/ProfileQuestionnaire.tsx (new - questionnaire form with all fields)
+  - src/app/profile/page.tsx (complete rewrite - shows questionnaire or profile view)
+  - scripts/ralph/smoke.spec.ts (added tests for profile questionnaire and profile view)
+- **Learnings for future iterations:**
+  - ProfileQuestionnaire is reusable for both creating and editing profiles
+  - Temperament uses multi-select toggleable buttons (same pattern as tags)
+  - Triggers and goals are free-text lists with add/remove functionality
+  - Profile page shows questionnaire when no profile exists, profile view when one does
+  - Edit button opens questionnaire with existing data pre-populated
+  - Delete button removes profile and shows questionnaire again
+  - Test data-testid patterns: profile-questionnaire, dog-name-input, dog-age-input, temperament-buttons
+  - Profile view uses: profile-view, profile-dog-name, profile-dog-age, profile-temperament, profile-triggers, profile-goals
+---

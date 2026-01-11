@@ -205,3 +205,46 @@ test('mood display shows on moment card when mood is set', async ({ page }) => {
   await expect(page.getByTestId('moment-card')).toBeVisible();
   await expect(page.getByTestId('mood-display')).toBeVisible();
 });
+
+test('profile page shows questionnaire when no profile exists', async ({ page }) => {
+  await page.goto('http://127.0.0.1:3000/profile');
+  
+  await page.evaluate(() => {
+    localStorage.removeItem('dogtracer_dog_profile');
+  });
+  await page.reload();
+  
+  await expect(page.getByTestId('profile-questionnaire')).toBeVisible();
+  await expect(page.getByTestId('dog-name-input')).toBeVisible();
+  await expect(page.getByTestId('dog-age-input')).toBeVisible();
+  await expect(page.getByTestId('temperament-buttons')).toBeVisible();
+  await expect(page.getByTestId('trigger-input')).toBeVisible();
+  await expect(page.getByTestId('goal-input')).toBeVisible();
+  await expect(page.getByTestId('profile-save-button')).toBeVisible();
+});
+
+test('profile page shows profile view after saving profile', async ({ page }) => {
+  await page.goto('http://127.0.0.1:3000/profile');
+  
+  await page.evaluate(() => {
+    localStorage.setItem('dogtracer_dog_profile', JSON.stringify({
+      id: 'profile_test',
+      name: 'Luna',
+      age: '2 years',
+      temperament: ['social', 'curious'],
+      triggers: ['scooters'],
+      goals: ['better recall'],
+      createdAt: Date.now(),
+      updatedAt: Date.now()
+    }));
+  });
+  await page.reload();
+  
+  await expect(page.getByTestId('profile-view')).toBeVisible();
+  await expect(page.getByTestId('profile-dog-name')).toContainText('Luna');
+  await expect(page.getByTestId('profile-dog-age')).toContainText('2 years');
+  await expect(page.getByTestId('profile-temperament')).toBeVisible();
+  await expect(page.getByTestId('profile-triggers')).toBeVisible();
+  await expect(page.getByTestId('profile-goals')).toBeVisible();
+  await expect(page.getByTestId('edit-profile-button')).toBeVisible();
+});
