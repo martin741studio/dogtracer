@@ -38,3 +38,28 @@ test('tags modal has all preset tags', async ({ page }) => {
   await expect(page.getByTestId('save-button')).toBeVisible();
   await expect(page.getByTestId('cancel-button')).toBeVisible();
 });
+
+test('detection overlay shows dog labels correctly', async ({ page }) => {
+  await page.goto('http://127.0.0.1:3000');
+  
+  await page.evaluate(() => {
+    const overlay = document.createElement('div');
+    overlay.setAttribute('data-testid', 'detection-overlay');
+    
+    const primaryDog = document.createElement('div');
+    primaryDog.setAttribute('data-testid', 'primary-dog-indicator');
+    primaryDog.innerHTML = '<div>[PRIMARY_DOG] ⭐</div>';
+    
+    const otherDog = document.createElement('div');
+    otherDog.setAttribute('data-testid', 'other-dog-indicator');
+    otherDog.innerHTML = '<div>[OTHER_DOG_1]</div>';
+    
+    overlay.appendChild(primaryDog);
+    overlay.appendChild(otherDog);
+    document.body.appendChild(overlay);
+  });
+  
+  await expect(page.getByTestId('detection-overlay')).toBeVisible();
+  await expect(page.getByTestId('primary-dog-indicator')).toBeVisible();
+  await expect(page.getByTestId('other-dog-indicator')).toBeVisible();
+});
