@@ -386,3 +386,21 @@ Thread: https://ampcode.com/threads/T-019bad72-9426-71de-96b3-9ff3cc92514e
   - Profile page shows AutoGenerateSettings below profile info, before delete button
   - Test data-testid patterns: generate-summary-button, daily-summary-modal, summary-modal-title, summary-modal-date, close-summary-modal, no-moments-message, auto-generate-settings, auto-generate-toggle, auto-generate-time-section, auto-generate-time-input
 ---
+
+## 2026-01-11 - US-021
+Thread: https://ampcode.com/threads/T-019bad77-0951-75d2-8ba4-9b591c20ec70
+- Implemented Encounters screen showing all named dogs and people with encounter stats
+- Files changed:
+  - src/app/lib/encounters.ts (new - EntityEncounterStats interface, getEntityEncounterStats, formatLastSeen utilities)
+  - src/app/encounters/page.tsx (complete rewrite - entity list with filter, encounter count, last seen, moments modal)
+  - src/app/lib/db.ts (added encounters module export)
+  - scripts/ralph/smoke.spec.ts (added 2 new tests for encounters page)
+- **Learnings for future iterations:**
+  - getEntityEncounterStats() computes encounter count and last seen date from moments.entityIds
+  - EntityCard reuses pattern from SocialMapCard but adds last seen date display
+  - formatLastSeen() converts dates to human-readable strings (Today, Yesterday, X days ago, or date)
+  - Filter buttons same pattern as SocialMapCard: all, dogs, humans
+  - EntityMomentsModal shows grid of moment thumbnails and opens MomentDetailModal on click
+  - Relationship labels differ from outcome labels (Friend vs friend, Neighbor vs neighbor)
+  - Test data-testid patterns: encounters-title, encounters-filter, encounters-list, encounter-entity-card, encounter-entity-name, encounter-entity-relationship, encounter-count, last-seen, encounter-moments-modal, encounter-moment-thumbnail, close-encounter-moments, empty-state
+---
