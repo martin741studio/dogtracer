@@ -183,3 +183,21 @@ Thread: https://ampcode.com/threads/T-019bad45-f237-70ed-bfd6-6cbe787153c9
   - Use forceUpdate pattern to refresh labels after entity save
   - Test data-testid patterns: entity-name-input, entity-notes-input, entity-modal-save, entity-modal-cancel
 ---
+
+## 2026-01-11 - US-010
+Thread: https://ampcode.com/threads/T-019bad49-864c-7329-aeb1-9b5fe9fe0b30
+- Implemented Timeline View with daily moments display and date navigation
+- Files changed:
+  - src/app/lib/moments.ts (added getMomentsByDate function)
+  - src/app/components/MomentDetailModal.tsx (new - full moment detail view with mood override)
+  - src/app/timeline/page.tsx (complete rewrite - date picker, moment list, detail modal)
+  - scripts/ralph/smoke.spec.ts (added timeline page test)
+- **Learnings for future iterations:**
+  - getMomentsByDate() filters by ISO date string (YYYY-MM-DD) and sorts chronologically
+  - Timeline uses sticky header for date navigation controls
+  - Date picker uses native HTML date input styled as secondary control
+  - MomentDetailModal allows mood override by tapping mood buttons
+  - Use "Today"/"Yesterday" labels for recent dates, formatted date for older dates
+  - Empty state with data-testid="empty-state" shows when no moments for selected day
+  - Test data-testid patterns: date-display, date-picker, prev-day-button, next-day-button, moment-count
+---
