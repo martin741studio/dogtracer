@@ -11,6 +11,80 @@ test('camera button is visible', async ({ page }) => {
   await expect(cameraButton).toBeVisible();
 });
 
+test('home page has generate summary button', async ({ page }) => {
+  await page.goto('http://127.0.0.1:3000');
+  await expect(page.getByTestId('generate-summary-button')).toBeVisible();
+});
+
+test('generate summary button opens daily summary modal', async ({ page }) => {
+  await page.goto('http://127.0.0.1:3000');
+  await page.getByTestId('generate-summary-button').click();
+  await expect(page.getByTestId('daily-summary-modal')).toBeVisible();
+  await expect(page.getByTestId('summary-modal-title')).toContainText('Daily Summary');
+  await expect(page.getByTestId('summary-modal-date')).toBeVisible();
+  
+  // Close modal
+  await page.getByTestId('close-summary-modal').click();
+  await expect(page.getByTestId('daily-summary-modal')).not.toBeVisible();
+});
+
+test('daily summary modal shows no moments message when empty', async ({ page }) => {
+  await page.goto('http://127.0.0.1:3000');
+  
+  await page.evaluate(() => {
+    localStorage.removeItem('dogtracer_moments');
+  });
+  await page.reload();
+  
+  await page.getByTestId('generate-summary-button').click();
+  await expect(page.getByTestId('daily-summary-modal')).toBeVisible();
+  await expect(page.getByTestId('no-moments-message')).toBeVisible();
+});
+
+test('profile page has auto-generate settings', async ({ page }) => {
+  await page.goto('http://127.0.0.1:3000/profile');
+  
+  await page.evaluate(() => {
+    localStorage.setItem('dogtracer_dog_profile', JSON.stringify({
+      id: 'profile_test',
+      name: 'Luna',
+      age: '2 years',
+      temperament: ['social'],
+      triggers: [],
+      goals: [],
+      createdAt: Date.now(),
+      updatedAt: Date.now()
+    }));
+  });
+  await page.reload();
+  
+  await expect(page.getByTestId('auto-generate-settings')).toBeVisible();
+  await expect(page.getByTestId('auto-generate-toggle')).toBeVisible();
+});
+
+test('auto-generate toggle enables time picker', async ({ page }) => {
+  await page.goto('http://127.0.0.1:3000/profile');
+  
+  await page.evaluate(() => {
+    localStorage.setItem('dogtracer_dog_profile', JSON.stringify({
+      id: 'profile_test',
+      name: 'Luna',
+      age: '2 years',
+      temperament: ['social'],
+      triggers: [],
+      goals: [],
+      createdAt: Date.now(),
+      updatedAt: Date.now()
+    }));
+  });
+  await page.reload();
+  
+  await expect(page.getByTestId('auto-generate-time-section')).not.toBeVisible();
+  await page.getByTestId('auto-generate-toggle').click();
+  await expect(page.getByTestId('auto-generate-time-section')).toBeVisible();
+  await expect(page.getByTestId('auto-generate-time-input')).toBeVisible();
+});
+
 test('tags modal has all preset tags', async ({ page }) => {
   await page.goto('http://127.0.0.1:3000');
   

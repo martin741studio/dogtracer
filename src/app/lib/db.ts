@@ -6,4 +6,5 @@ export * from './detection';
 export * from './labeling';
 export * from './mood';
 export * from './summary';
+export * from './settings';
 export { runMigrations, getDbVersion, getCurrentSchemaVersion } from './migrations';

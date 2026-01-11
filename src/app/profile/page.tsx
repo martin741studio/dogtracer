@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import ProfileQuestionnaire from "../components/ProfileQuestionnaire";
+import AutoGenerateSettings from "../components/AutoGenerateSettings";
 import { type DogProfile, getProfile, deleteProfile } from "../lib/profile";
 
 export default function Profile() {
@@ -123,6 +124,10 @@ export default function Profile() {
               </div>
             </div>
           )}
+        </div>
+
+        <div className="mt-6">
+          <AutoGenerateSettings />
         </div>
 
         <div className="mt-6">
