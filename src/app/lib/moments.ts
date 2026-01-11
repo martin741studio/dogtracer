@@ -9,6 +9,10 @@ export type MomentTag = 'walk' | 'play' | 'rest' | 'training' | 'feeding' | 'vet
 
 export const MOMENT_TAGS: MomentTag[] = ['walk', 'play', 'rest', 'training', 'feeding', 'vet', 'bath', 'social', 'stress'];
 
+export type MomentMood = 'calm' | 'excited' | 'alert' | 'anxious' | 'tired' | 'playful';
+
+export const MOMENT_MOODS: MomentMood[] = ['calm', 'excited', 'alert', 'anxious', 'tired', 'playful'];
+
 export interface Moment {
   id: string;
   photoDataUrl: string;
@@ -18,6 +22,10 @@ export interface Moment {
   gps: GpsLocation | null;
   tags: MomentTag[];
   notes: string;
+  mood: MomentMood | null;
+  moodConfidence: number | null;
+  entityIds: string[];
+  sessionId: string | null;
 }
 
 const MOMENTS_KEY = 'dogtracer_moments';
@@ -63,5 +71,9 @@ export function createMoment(
     gps,
     tags,
     notes,
+    mood: null,
+    moodConfidence: null,
+    entityIds: [],
+    sessionId: null,
   };
 }
