@@ -1,5 +1,11 @@
 m
-# Ralph Agent Instructions
+EXECUTION MODE (MANDATORY):
+
+- Use scripts/ralph/prd-exec.md as the authoritative task list.
+- Ignore mobile-native requirements in other PRDs.
+- Implement one user story per iteration.
+- Start with US-001.
+- Never exit an iteration without writing to scripts/ralph/progress.txt.# Ralph Agent Instructions
 
 Product requirements:
 - Canonical PRD (markdown): scripts/ralph/prd-dog-tracer.md
