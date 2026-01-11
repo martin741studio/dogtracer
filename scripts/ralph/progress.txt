@@ -201,3 +201,22 @@ Thread: https://ampcode.com/threads/T-019bad49-864c-7329-aeb1-9b5fe9fe0b30
   - Empty state with data-testid="empty-state" shows when no moments for selected day
   - Test data-testid patterns: date-display, date-picker, prev-day-button, next-day-button, moment-count
 ---
+
+## 2026-01-11 - US-011
+Thread: https://ampcode.com/threads/T-019bad4c-b9db-723b-884e-3f5fdc482175
+- Implemented session clustering: moments grouped into sessions by time (30 min) and location (100m)
+- Files changed:
+  - src/app/lib/sessions.ts (added clusterMomentsIntoSessions, rebuildSessionsForDate, haversine distance calc)
+  - src/app/components/SessionCard.tsx (new - session card with key photos, behavior flags, time range)
+  - src/app/timeline/page.tsx (added session view with toggle between sessions/moments)
+  - scripts/ralph/smoke.spec.ts (added test for session view toggle)
+- **Learnings for future iterations:**
+  - Haversine formula used for GPS distance calculation (handles Earth curvature)
+  - Session type inferred from moment tags priority: walk > play > training > social > rest
+  - Key photos are first, middle, and last moment photos (up to 3)
+  - Behavior flags derived from moment tags: play/social→social, rest→rest, training→training, feeding→food, stress→trigger
+  - rebuildSessionsForDate() clears old sessions and creates new ones from current moments
+  - SessionCard uses amber-50 header for visual distinction
+  - View toggle: sessions view (default) shows SessionCards, moments view shows individual MomentCards
+  - Test data-testid patterns: session-card, sessions-view, moments-view, view-sessions-button, view-moments-button
+---
