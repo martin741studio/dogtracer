@@ -110,3 +110,23 @@ Thread: https://ampcode.com/threads/T-019bad39-d9da-72eb-ab4a-c80a22349463
   - Use generateEntityId()/generateSessionId()/generateProfileId() for consistent ID generation
   - Import from db.ts for unified access to all database types and functions
 ---
+
+## 2026-01-11 - US-006
+Thread: https://ampcode.com/threads/T-019bad3d-1b5a-7148-86c8-fdc6136b0792
+- Implemented cloud entity detection API integration with mock backend
+- Files changed:
+  - src/app/lib/detection.ts (new - detection types, queue, API service, retry logic)
+  - src/app/api/detect/route.ts (new - mock detection API endpoint)
+  - src/app/lib/db.ts (added detection exports)
+  - src/app/lib/moments.ts (added updateMoment function)
+  - src/app/components/CameraButton.tsx (integrated detection after moment save)
+- **Learnings for future iterations:**
+  - Mock API endpoint at /api/detect returns random dog/human detections
+  - Detection runs asynchronously after moment is saved (non-blocking UX)
+  - DetectionResult stores: entities[], status, retryCount, error
+  - Offline queue with retry logic: MAX_RETRIES=3, RETRY_DELAY_MS=5000
+  - BoundingBox uses normalized coords (0-1) for x, y, width, height
+  - processDetection() handles full flow: call API, save result, manage queue
+  - getPendingDetectionCount() returns number of queued items for UI sync indicator
+  - Import from detection.ts or db.ts for detection types and functions
+---
