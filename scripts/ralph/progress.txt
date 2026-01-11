@@ -1,5 +1,30 @@
 # Ralph Progress Log
 
+## Codebase Patterns
+- This is a Next.js 16 web app, NOT React Native/Flutter mobile
+- Uses Tailwind CSS v4 for styling
+- App router in src/app/ directory
+- Components go in src/app/components/
+- Use "use client" directive for client components using hooks like usePathname
+
 ## Learnings
 
+---
+
+## 2026-01-11 - US-001
+Thread: https://ampcode.com/threads/T-019bad2a-e26b-71eb-b27d-f6c0dd4b9379
+- Implemented project setup and navigation shell for DogTracer web app
+- Files changed:
+  - src/app/layout.tsx (updated metadata, added BottomNav)
+  - src/app/page.tsx (new home page)
+  - src/app/components/BottomNav.tsx (new bottom navigation component)
+  - src/app/timeline/page.tsx (placeholder)
+  - src/app/encounters/page.tsx (placeholder)
+  - src/app/profile/page.tsx (placeholder)
+- **Learnings for future iterations:**
+  - Despite PRD saying React Native/Flutter, the actual project is Next.js web - ignore mobile-native requirements
+  - Bottom navigation uses fixed positioning with pb-16 on main content to prevent overlap
+  - Active tab uses amber-600 color scheme
+  - Using Heroicons-style SVG icons for navigation
+  - Browser test at scripts/ralph/smoke.spec.ts checks homepage loads with title
 ---
