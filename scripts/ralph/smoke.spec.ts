@@ -595,3 +595,50 @@ test('social map entity card shows encounter details and opens moments modal', a
   await page.getByTestId('close-entity-moments').click();
   await expect(page.getByTestId('entity-moments-modal')).not.toBeVisible();
 });
+
+test('recommendations card displays actionable recommendations with priority', async ({ page }) => {
+  await page.goto('http://127.0.0.1:3000/timeline');
+  
+  await page.evaluate(() => {
+    const now = new Date();
+    
+    // Create a moment without walks to trigger "Add a Walk Tomorrow" recommendation
+    localStorage.setItem('dogtracer_moments', JSON.stringify([
+      {
+        id: 'moment-rec-1',
+        photoDataUrl: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==',
+        timestamp: now.toISOString(),
+        timestampLocal: now.toLocaleString(),
+        createdAt: now.getTime(),
+        gps: null,
+        tags: ['rest'],
+        notes: '',
+        mood: 'calm',
+        moodConfidence: 80,
+        entityIds: [],
+        sessionId: null
+      }
+    ]));
+    
+    localStorage.setItem('dogtracer_dog_profile', JSON.stringify({
+      id: 'profile_test',
+      name: 'Rocky',
+      age: '4 years',
+      temperament: ['calm', 'anxious'],
+      triggers: ['skateboards'],
+      goals: ['better recall'],
+      createdAt: Date.now(),
+      updatedAt: Date.now()
+    }));
+  });
+  
+  await page.reload();
+  
+  await expect(page.getByTestId('recommendations-card')).toBeVisible();
+  await expect(page.getByTestId('recommendations-title')).toContainText('Recommendations for Tomorrow');
+  await expect(page.getByTestId('recommendations-count')).toBeVisible();
+  await expect(page.getByTestId('recommendation').first()).toBeVisible();
+  await expect(page.getByTestId('recommendation-title').first()).toBeVisible();
+  await expect(page.getByTestId('recommendation-description').first()).toBeVisible();
+  await expect(page.getByTestId('recommendation-priority').first()).toBeVisible();
+});
