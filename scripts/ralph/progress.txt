@@ -327,3 +327,22 @@ Thread: https://ampcode.com/threads/T-019bad63-e33c-7235-a854-70f0cbfc0af5
   - Summary tone colors applied to card header (same as other summary cards)
   - Test data-testid patterns: social-map-card, social-map-title, social-map-count, social-map-filter, filter-all, filter-dogs, filter-humans, social-map-entity-card, entity-name, entity-outcome, entity-encounter-count, entity-moments-modal, entity-moment-thumbnail, close-entity-moments
 ---
+
+## 2026-01-11 - US-018
+Thread: https://ampcode.com/threads/T-019bad69-2898-76a8-a0ad-ff27d8d4acec
+- Implemented Behavior Insights section for daily summary display
+- Files changed:
+  - src/app/components/BehaviorInsightsCard.tsx (new - behavior insights card with collapsible evidence moments)
+  - src/app/lib/summary.ts (enhanced generateBehaviorInsights with 7 pattern detection rules)
+  - src/app/timeline/page.tsx (integrated BehaviorInsightsCard, added behaviorInsights state)
+  - scripts/ralph/smoke.spec.ts (added test for behavior insights card)
+- **Learnings for future iterations:**
+  - BehaviorInsight has 3 types: pattern (📊 blue), trigger (⚠️ red), win (✅ green)
+  - Pattern detection rules include: stress detection, training progress, calm vs anxious ratio, rest-heavy day, reactivity after rest, social success, trigger encounters, high energy day
+  - Insights are tone-aware with different descriptions for upbeat/calm/protective
+  - Evidence moments can be expanded/collapsed with "View evidence moments" button
+  - Insight card shows evidence count badge and thumbnail grid (max 4 with +N overflow)
+  - Test data-testid patterns: behavior-insights-card, behavior-insights-title, behavior-insight, insight-title, insight-description, insight-evidence-count, toggle-evidence-moments, evidence-moments-grid, evidence-moment-thumbnail
+  - Training progress wins show matched goal from profile if available
+  - Trigger insights reference known triggers from dog profile
+---
