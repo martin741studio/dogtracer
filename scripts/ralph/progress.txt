@@ -11,6 +11,9 @@
 - Use `data-testid` attributes for test selectors
 - For GPS location on web, use navigator.geolocation API (not React Native location APIs)
 - For reverse geocoding, use Nominatim OpenStreetMap API (free, no API key needed)
+- Database modules in src/app/lib/: moments.ts, entities.ts, sessions.ts, profile.ts
+- Use db.ts as unified export for all database types and functions
+- migrations.ts handles schema versioning with incremental migrations
 
 ## Learnings
 
@@ -84,4 +87,26 @@ Thread: https://ampcode.com/threads/T-019bad37-068b-74d8-b8e2-1448ebcfbba3
   - Cancel button discards the pending capture
   - Save button commits moment with selected tags and notes
   - All 9 preset tags implemented: walk, play, rest, training, feeding, vet, bath, social, stress
+---
+
+## 2026-01-11 - US-005
+Thread: https://ampcode.com/threads/T-019bad39-d9da-72eb-ab4a-c80a22349463
+- Implemented robust local database schema for moments, entities, sessions, and profiles
+- Files changed:
+  - src/app/lib/moments.ts (added mood, moodConfidence, entityIds, sessionId fields; added MomentMood type)
+  - src/app/lib/entities.ts (new - Entity/DogEntity/HumanEntity interfaces with metadata, CRUD functions)
+  - src/app/lib/sessions.ts (new - Session interface with moment clustering, type, behavior flags)
+  - src/app/lib/profile.ts (new - DogProfile interface with temperament, triggers, goals)
+  - src/app/lib/migrations.ts (new - schema versioning with runMigrations function)
+  - src/app/lib/db.ts (new - unified export for all database modules)
+- **Learnings for future iterations:**
+  - Moments table extended with: mood (MomentMood | null), moodConfidence (0-100), entityIds[], sessionId
+  - Entities table has polymorphic type (dog/human) with type-specific metadata interfaces
+  - DogEntity metadata: breed, sex, size, relationship (friend/neutral/conflict/unknown), isPrimary
+  - HumanEntity metadata: relationship (owner/friend/stranger/neighbor/vet/trainer)
+  - Sessions table: id, type, startTime, endTime, momentIds, keyPhotoIds, behaviorFlags, placeLabel
+  - DogProfile: name, age, temperament[] (10 options), triggers[], goals[]
+  - Migration system uses version numbers; each migration has name and migrate() function
+  - Use generateEntityId()/generateSessionId()/generateProfileId() for consistent ID generation
+  - Import from db.ts for unified access to all database types and functions
 ---
