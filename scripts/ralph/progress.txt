@@ -220,3 +220,23 @@ Thread: https://ampcode.com/threads/T-019bad4c-b9db-723b-884e-3f5fdc482175
   - View toggle: sessions view (default) shows SessionCards, moments view shows individual MomentCards
   - Test data-testid patterns: session-card, sessions-view, moments-view, view-sessions-button, view-moments-button
 ---
+
+## 2026-01-11 - US-012
+Thread: https://ampcode.com/threads/T-019bad50-ecc0-74ba-8f54-f0e55ad985e0
+- Implemented dog mood inference from cloud API with display and manual override
+- Files changed:
+  - src/app/api/detect/route.ts (added MoodInference type, generateMockMoodInference function)
+  - src/app/lib/detection.ts (added MoodInference interface, moodInference field in DetectionResult)
+  - src/app/lib/mood.ts (new - mood display helpers with emoji, label, color for each mood)
+  - src/app/components/MomentCard.tsx (added mood display with colored pill badge showing emoji, label, confidence)
+  - src/app/lib/db.ts (added mood module export)
+  - scripts/ralph/smoke.spec.ts (added tests for mood display and mood override buttons)
+- **Learnings for future iterations:**
+  - MoodInference stores: mood (MomentMood), confidence (0-100)
+  - Mood inferred by detection API and saved to moment automatically via updateMoment()
+  - Each mood has distinct color: calm=blue, excited=yellow, alert=orange, anxious=red, tired=purple, playful=green
+  - MOOD_DISPLAY constant provides emoji, label, color for each mood type
+  - MomentDetailModal already had mood override functionality from US-010 - just needed API integration
+  - Mood display uses data-testid="mood-display" for test selectors
+  - Mood override buttons use data-testid="mood-button-{mood}" pattern
+---

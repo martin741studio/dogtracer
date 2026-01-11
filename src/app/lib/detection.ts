@@ -1,3 +1,5 @@
+import { type MomentMood, updateMoment } from './moments';
+
 export interface BoundingBox {
   x: number;
   y: number;
@@ -14,10 +16,16 @@ export interface DetectedEntity {
   label: string;
 }
 
+export interface MoodInference {
+  mood: MomentMood;
+  confidence: number;
+}
+
 export interface DetectionResult {
   id: string;
   momentId: string;
   entities: DetectedEntity[];
+  moodInference?: MoodInference;
   processedAt: number;
   status: 'pending' | 'processing' | 'completed' | 'failed';
   error?: string;
@@ -120,6 +128,7 @@ export function updateQueueItemRetry(momentId: string): boolean {
 export interface DetectionApiResponse {
   success: boolean;
   entities?: DetectedEntity[];
+  moodInference?: MoodInference;
   error?: string;
 }
 
@@ -139,7 +148,7 @@ export async function callDetectionApi(photoDataUrl: string): Promise<DetectionA
     }
 
     const data = await response.json();
-    return { success: true, entities: data.entities };
+    return { success: true, entities: data.entities, moodInference: data.moodInference };
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Unknown error';
     return { success: false, error: message };
@@ -164,9 +173,17 @@ export async function processDetection(momentId: string, photoDataUrl: string): 
 
   if (response.success && response.entities) {
     result.entities = response.entities;
+    result.moodInference = response.moodInference;
     result.status = 'completed';
     result.processedAt = Date.now();
     removeFromDetectionQueue(momentId);
+    
+    if (response.moodInference) {
+      updateMoment(momentId, {
+        mood: response.moodInference.mood,
+        moodConfidence: response.moodInference.confidence,
+      });
+    }
   } else {
     result.error = response.error;
     result.retryCount += 1;

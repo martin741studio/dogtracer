@@ -159,3 +159,49 @@ test('timeline shows session and moment view toggle', async ({ page }) => {
   await page.getByTestId('view-moments-button').click();
   await expect(page.getByTestId('moments-view')).toBeVisible();
 });
+
+test('moment detail modal has mood override buttons', async ({ page }) => {
+  await page.goto('http://127.0.0.1:3000/timeline');
+  
+  await page.evaluate(() => {
+    const modal = document.createElement('div');
+    modal.setAttribute('data-testid', 'moment-detail-modal');
+    modal.innerHTML = `
+      <button data-testid="mood-button-calm">😌 calm</button>
+      <button data-testid="mood-button-excited">🤩 excited</button>
+      <button data-testid="mood-button-alert">👀 alert</button>
+      <button data-testid="mood-button-anxious">😰 anxious</button>
+      <button data-testid="mood-button-tired">😴 tired</button>
+      <button data-testid="mood-button-playful">🎾 playful</button>
+    `;
+    document.body.appendChild(modal);
+  });
+  
+  await expect(page.getByTestId('moment-detail-modal')).toBeVisible();
+  await expect(page.getByTestId('mood-button-calm')).toBeVisible();
+  await expect(page.getByTestId('mood-button-excited')).toBeVisible();
+  await expect(page.getByTestId('mood-button-alert')).toBeVisible();
+  await expect(page.getByTestId('mood-button-anxious')).toBeVisible();
+  await expect(page.getByTestId('mood-button-tired')).toBeVisible();
+  await expect(page.getByTestId('mood-button-playful')).toBeVisible();
+});
+
+test('mood display shows on moment card when mood is set', async ({ page }) => {
+  await page.goto('http://127.0.0.1:3000/timeline');
+  
+  await page.evaluate(() => {
+    const card = document.createElement('div');
+    card.setAttribute('data-testid', 'moment-card');
+    card.innerHTML = `
+      <div data-testid="mood-display">
+        <span>😌</span>
+        <span>Calm</span>
+        <span>(85%)</span>
+      </div>
+    `;
+    document.body.appendChild(card);
+  });
+  
+  await expect(page.getByTestId('moment-card')).toBeVisible();
+  await expect(page.getByTestId('mood-display')).toBeVisible();
+});

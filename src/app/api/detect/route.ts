@@ -1,5 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
-import type { DetectedEntity, BoundingBox } from '@/app/lib/detection';
+import type { DetectedEntity, BoundingBox, MoodInference } from '@/app/lib/detection';
+import type { MomentMood } from '@/app/lib/moments';
+
+const MOODS: MomentMood[] = ['calm', 'excited', 'alert', 'anxious', 'tired', 'playful'];
+
+function generateMockMoodInference(): MoodInference {
+  const mood = MOODS[Math.floor(Math.random() * MOODS.length)];
+  const confidence = Math.floor(50 + Math.random() * 50);
+  return { mood, confidence };
+}
 
 function generateMockBoundingBox(): BoundingBox {
   const x = Math.random() * 0.5;
@@ -63,10 +72,12 @@ export async function POST(request: NextRequest) {
     }
 
     const entities = generateMockDetections();
+    const moodInference = generateMockMoodInference();
 
     return NextResponse.json({
       success: true,
       entities,
+      moodInference,
       processedAt: Date.now(),
     });
   } catch (error) {

@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { type Moment } from '../lib/moments';
 import { getDetectionResultByMomentId } from '../lib/detection';
 import { type LabeledEntity } from '../lib/labeling';
+import { getMoodDisplay } from '../lib/mood';
 import DetectionOverlay from './DetectionOverlay';
 import EntityNamingModal from './EntityNamingModal';
 
@@ -71,6 +72,22 @@ export default function MomentCard({ moment, onClick }: MomentCardProps) {
                   {tag}
                 </span>
               ))}
+            </div>
+          )}
+          {moment.mood && (
+            <div className="mt-2" data-testid="mood-display">
+              {(() => {
+                const display = getMoodDisplay(moment.mood);
+                return (
+                  <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${display.color}`}>
+                    <span>{display.emoji}</span>
+                    <span>{display.label}</span>
+                    {moment.moodConfidence && (
+                      <span className="opacity-70">({moment.moodConfidence}%)</span>
+                    )}
+                  </span>
+                );
+              })()}
             </div>
           )}
           {entities.length > 0 && (
