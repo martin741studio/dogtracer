@@ -1,0 +1,10 @@
+{
+  "product": "DogTracer",
+  "source_md": "scripts/ralph/prd-dog-tracer.md",
+  "instructions": [
+    "The canonical PRD content is in source_md.",
+    "Treat the user stories in the markdown as the backlog.",
+    "Resume from the first story not marked as completed/passing.",
+    "Write learnings to scripts/ralph/progress.txt and keep it updated."
+  ]
+}
