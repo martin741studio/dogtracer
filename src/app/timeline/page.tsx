@@ -1,9 +1,11 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { getMomentsByDate, type Moment } from '../lib/moments';
+import { getMomentsByDate, getMomentById, type Moment } from '../lib/moments';
+import { rebuildSessionsForDate, getSessionsByDate, type Session } from '../lib/sessions';
 import MomentCard from '../components/MomentCard';
 import MomentDetailModal from '../components/MomentDetailModal';
+import SessionCard from '../components/SessionCard';
 
 function formatDateForInput(date: Date): string {
   return date.toISOString().split('T')[0];
@@ -31,13 +33,22 @@ function formatDisplayDate(date: Date): string {
 export default function Timeline() {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [moments, setMoments] = useState<Moment[]>([]);
+  const [sessions, setSessions] = useState<Session[]>([]);
   const [selectedMoment, setSelectedMoment] = useState<Moment | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [viewMode, setViewMode] = useState<'sessions' | 'moments'>('sessions');
 
   useEffect(() => {
     setIsLoading(true);
     const dayMoments = getMomentsByDate(selectedDate);
     setMoments(dayMoments);
+    
+    if (dayMoments.length > 0) {
+      const daySessions = rebuildSessionsForDate(selectedDate);
+      setSessions(daySessions);
+    } else {
+      setSessions([]);
+    }
     setIsLoading(false);
   }, [selectedDate]);
 
@@ -132,18 +143,57 @@ export default function Timeline() {
           </div>
         ) : (
           <div className="space-y-4">
-            <p className="text-sm text-zinc-500 dark:text-zinc-400" data-testid="moment-count">
-              {moments.length} moment{moments.length !== 1 ? 's' : ''} captured
-            </p>
-            <div className="grid grid-cols-1 gap-4">
-              {moments.map((moment) => (
-                <MomentCard
-                  key={moment.id}
-                  moment={moment}
-                  onClick={() => handleMomentClick(moment)}
-                />
-              ))}
+            <div className="flex items-center justify-between">
+              <p className="text-sm text-zinc-500 dark:text-zinc-400" data-testid="moment-count">
+                {moments.length} moment{moments.length !== 1 ? 's' : ''} in {sessions.length} session{sessions.length !== 1 ? 's' : ''}
+              </p>
+              <div className="flex gap-1 bg-zinc-200 dark:bg-zinc-800 rounded-lg p-0.5">
+                <button
+                  onClick={() => setViewMode('sessions')}
+                  className={`px-2 py-1 text-xs rounded-md ${
+                    viewMode === 'sessions'
+                      ? 'bg-white dark:bg-zinc-700 text-zinc-900 dark:text-zinc-100'
+                      : 'text-zinc-600 dark:text-zinc-400'
+                  }`}
+                  data-testid="view-sessions-button"
+                >
+                  Sessions
+                </button>
+                <button
+                  onClick={() => setViewMode('moments')}
+                  className={`px-2 py-1 text-xs rounded-md ${
+                    viewMode === 'moments'
+                      ? 'bg-white dark:bg-zinc-700 text-zinc-900 dark:text-zinc-100'
+                      : 'text-zinc-600 dark:text-zinc-400'
+                  }`}
+                  data-testid="view-moments-button"
+                >
+                  Moments
+                </button>
+              </div>
             </div>
+
+            {viewMode === 'sessions' ? (
+              <div className="grid grid-cols-1 gap-4" data-testid="sessions-view">
+                {sessions.map((session) => (
+                  <SessionCard
+                    key={session.id}
+                    session={session}
+                    onMomentClick={handleMomentClick}
+                  />
+                ))}
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 gap-4" data-testid="moments-view">
+                {moments.map((moment) => (
+                  <MomentCard
+                    key={moment.id}
+                    moment={moment}
+                    onClick={() => handleMomentClick(moment)}
+                  />
+                ))}
+              </div>
+            )}
           </div>
         )}
       </div>

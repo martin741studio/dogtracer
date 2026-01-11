@@ -130,3 +130,32 @@ test('timeline page has date picker and navigation', async ({ page }) => {
   await expect(page.getByTestId('next-day-button')).toBeVisible();
   await expect(page.getByTestId('empty-state')).toBeVisible();
 });
+
+test('timeline shows session and moment view toggle', async ({ page }) => {
+  await page.goto('http://127.0.0.1:3000/timeline');
+
+  await page.evaluate(() => {
+    localStorage.setItem('dogtracer_moments', JSON.stringify([{
+      id: 'test-moment-1',
+      photoDataUrl: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==',
+      timestamp: new Date().toISOString(),
+      timestampLocal: new Date().toLocaleString(),
+      createdAt: Date.now(),
+      gps: null,
+      tags: ['walk'],
+      notes: '',
+      mood: null,
+      moodConfidence: null,
+      entityIds: [],
+      sessionId: null
+    }]));
+  });
+
+  await page.reload();
+  await expect(page.getByTestId('view-sessions-button')).toBeVisible();
+  await expect(page.getByTestId('view-moments-button')).toBeVisible();
+  await expect(page.getByTestId('sessions-view')).toBeVisible();
+  
+  await page.getByTestId('view-moments-button').click();
+  await expect(page.getByTestId('moments-view')).toBeVisible();
+});
