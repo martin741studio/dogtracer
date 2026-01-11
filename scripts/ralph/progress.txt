@@ -164,3 +164,22 @@ Thread: https://ampcode.com/threads/T-019bad42-ca40-72da-b99c-0119bb106a06
   - Human indicators use data-testid="person-indicator" for test selectors
   - labelDetectedEntities() now handles both dog and human types
 ---
+
+## 2026-01-11 - US-009
+Thread: https://ampcode.com/threads/T-019bad45-f237-70ed-bfd6-6cbe787153c9
+- Implemented identity management with entity naming dialog for detected dogs and people
+- Files changed:
+  - src/app/components/EntityNamingModal.tsx (new - modal for naming entities with all metadata fields)
+  - src/app/components/DetectionOverlay.tsx (added onEntityTap callback prop for clickable entities)
+  - src/app/components/MomentCard.tsx (integrated entity tap handling and naming modal)
+  - scripts/ralph/smoke.spec.ts (added test for entity naming modal fields)
+- **Learnings for future iterations:**
+  - EntityNamingModal is reusable for both dogs and humans with type-specific fields
+  - Dogs: name, breed (optional), sex, size, relationship (friend/neutral/conflict/unknown)
+  - Humans: name, relationship (owner/friend/stranger/neighbor/vet/trainer)
+  - Notes field available for interaction details on both entity types
+  - Detection boxes become clickable when onEntityTap prop is provided
+  - Modal loads existing entity data if entityId is provided (edit mode)
+  - Use forceUpdate pattern to refresh labels after entity save
+  - Test data-testid patterns: entity-name-input, entity-notes-input, entity-modal-save, entity-modal-cancel
+---
