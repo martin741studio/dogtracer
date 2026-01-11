@@ -1,14 +1,21 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { createMoment, saveMoment, type GpsLocation } from "../lib/moments";
+import { createMoment, saveMoment, type GpsLocation, type MomentTag } from "../lib/moments";
 import { getLocationWithLabel } from "../lib/location";
+import TagsModal from "./TagsModal";
+
+interface PendingCapture {
+  photoDataUrl: string;
+  gps: GpsLocation | null;
+}
 
 export default function CameraButton() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [lastMoment, setLastMoment] = useState<{ time: string; placeLabel: string | null } | null>(null);
   const [isCapturing, setIsCapturing] = useState(false);
+  const [pendingCapture, setPendingCapture] = useState<PendingCapture | null>(null);
 
   const handleClick = () => {
     fileInputRef.current?.click();
@@ -20,30 +27,42 @@ export default function CameraButton() {
 
     setIsCapturing(true);
 
-    let gpsLocation: GpsLocation | null = null;
     const locationPromise = getLocationWithLabel();
 
     const reader = new FileReader();
     reader.onload = async (event) => {
       const dataUrl = event.target?.result as string;
+      const gpsLocation = await locationPromise;
       
-      gpsLocation = await locationPromise;
-      
-      const moment = createMoment(dataUrl, gpsLocation);
-      saveMoment(moment);
-      setLastMoment({ 
-        time: moment.timestampLocal, 
-        placeLabel: gpsLocation?.placeLabel || null 
+      setPendingCapture({
+        photoDataUrl: dataUrl,
+        gps: gpsLocation,
       });
-      setShowConfirmation(true);
       setIsCapturing(false);
-      setTimeout(() => setShowConfirmation(false), 3000);
     };
     reader.readAsDataURL(file);
 
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
     }
+  };
+
+  const handleSaveMoment = (tags: MomentTag[], notes: string) => {
+    if (!pendingCapture) return;
+    
+    const moment = createMoment(pendingCapture.photoDataUrl, pendingCapture.gps, tags, notes);
+    saveMoment(moment);
+    setLastMoment({ 
+      time: moment.timestampLocal, 
+      placeLabel: pendingCapture.gps?.placeLabel || null 
+    });
+    setPendingCapture(null);
+    setShowConfirmation(true);
+    setTimeout(() => setShowConfirmation(false), 3000);
+  };
+
+  const handleCancelCapture = () => {
+    setPendingCapture(null);
   };
 
   return (
@@ -111,6 +130,14 @@ export default function CameraButton() {
           </svg>
         )}
       </button>
+
+      {pendingCapture && (
+        <TagsModal 
+          photoDataUrl={pendingCapture.photoDataUrl}
+          onSave={handleSaveMoment}
+          onCancel={handleCancelCapture}
+        />
+      )}
 
       {showConfirmation && lastMoment && (
         <div

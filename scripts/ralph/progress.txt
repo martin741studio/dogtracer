@@ -67,3 +67,21 @@ Thread: https://ampcode.com/threads/T-019bad2f-a139-744a-b3d8-6ee6bce5dc96
   - Playwright tests fail with `networkidle` on Next.js dev server due to HMR - use default `load` wait
   - Added `data-testid="camera-button"` for test selectors
 ---
+
+## 2026-01-11 - US-004
+Thread: https://ampcode.com/threads/T-019bad37-068b-74d8-b8e2-1448ebcfbba3
+- Implemented quick tags and notes for moment capture
+- Files changed:
+  - src/app/lib/moments.ts (added MomentTag type, MOMENT_TAGS constant, tags/notes fields to Moment interface)
+  - src/app/components/TagsModal.tsx (new modal component with tag selection and notes input)
+  - src/app/components/CameraButton.tsx (integrated TagsModal, show modal after photo capture before saving)
+  - scripts/ralph/smoke.spec.ts (added test for tags modal UI elements)
+- **Learnings for future iterations:**
+  - Modal appears after photo capture, before moment is saved to localStorage
+  - Tags are toggleable buttons with emoji icons for visual feedback
+  - Selected tags use amber-500 background, unselected use gray-100
+  - Notes field is optional textarea below tags
+  - Cancel button discards the pending capture
+  - Save button commits moment with selected tags and notes
+  - All 9 preset tags implemented: walk, play, rest, training, feeding, vet, bath, social, stress
+---
