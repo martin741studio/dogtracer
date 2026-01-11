@@ -310,3 +310,20 @@ Thread: https://ampcode.com/threads/T-019bad5f-9703-735d-9fdb-78369a41c5cf
   - Click on photo in highlight opens MomentDetailModal via onMomentClick callback
   - Test data-testid patterns: timeline-highlights-card, timeline-highlights-title, timeline-highlight, highlight-time-range, highlight-description, highlight-place-label, highlight-photo, highlight-interactions, highlight-tags, tag-{label}
 ---
+
+## 2026-01-11 - US-017
+Thread: https://ampcode.com/threads/T-019bad63-e33c-7235-a854-70f0cbfc0af5
+- Implemented Social Map section for daily summary showing encountered dogs and people
+- Files changed:
+  - src/app/components/SocialMapCard.tsx (new - social map display with entity cards, filter, moments modal)
+  - src/app/timeline/page.tsx (integrated SocialMapCard, added socialMap state)
+  - scripts/ralph/smoke.spec.ts (added 2 tests for social map)
+- **Learnings for future iterations:**
+  - SocialMapEntry already exists in summary.ts - generateSocialMap() extracts entities from moments
+  - SocialMapCard has filter buttons: All, Dogs only, People only
+  - Each entity card shows: icon (🐕/👤), name, outcome badge, encounter count
+  - Outcome colors: friend/owner=green, conflict=red, neutral/neighbor=blue, vet/trainer=purple
+  - EntityMomentsModal opens on tap showing all moments with that entity as photo grid
+  - Summary tone colors applied to card header (same as other summary cards)
+  - Test data-testid patterns: social-map-card, social-map-title, social-map-count, social-map-filter, filter-all, filter-dogs, filter-humans, social-map-entity-card, entity-name, entity-outcome, entity-encounter-count, entity-moments-modal, entity-moment-thumbnail, close-entity-moments
+---
