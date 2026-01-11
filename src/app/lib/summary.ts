@@ -285,6 +285,7 @@ function generateBehaviorInsights(
   tone: SummaryTone
 ): BehaviorInsight[] {
   const insights: BehaviorInsight[] = [];
+  const dogName = profile?.name || 'Your dog';
 
   const stressMoments = moments.filter((m) => m.tags.includes('stress'));
   if (stressMoments.length > 0) {
@@ -293,7 +294,9 @@ function generateBehaviorInsights(
       title: 'Stress Moments Detected',
       description:
         tone === 'calm'
-          ? `${profile?.name || 'Your dog'} showed some stress signals today. Let's work on building confidence.`
+          ? `${dogName} showed some stress signals today. Let's work on building confidence.`
+          : tone === 'protective'
+          ? `${dogName} encountered ${stressMoments.length} challenging situation${stressMoments.length !== 1 ? 's' : ''}. Staying vigilant.`
           : `Found ${stressMoments.length} moment${stressMoments.length !== 1 ? 's' : ''} with stress indicators. Worth monitoring.`,
       momentIds: stressMoments.map((m) => m.id),
     });
@@ -301,13 +304,16 @@ function generateBehaviorInsights(
 
   const trainingMoments = moments.filter((m) => m.tags.includes('training'));
   if (trainingMoments.length > 0) {
+    const goalMatch = profile?.goals?.[0];
     insights.push({
       type: 'win',
-      title: 'Training Progress',
+      title: goalMatch ? `Progress on: ${goalMatch}` : 'Training Progress',
       description:
         tone === 'upbeat'
           ? `Amazing! ${trainingMoments.length} training moment${trainingMoments.length !== 1 ? 's' : ''} today. Keep up the great work!`
-          : `${trainingMoments.length} training moment${trainingMoments.length !== 1 ? 's' : ''} logged. Consistent practice is key.`,
+          : tone === 'calm'
+          ? `${trainingMoments.length} training moment${trainingMoments.length !== 1 ? 's' : ''} logged. Consistent practice is key.`
+          : `${dogName} stayed focused through ${trainingMoments.length} training session${trainingMoments.length !== 1 ? 's' : ''}. Good discipline.`,
       momentIds: trainingMoments.map((m) => m.id),
     });
   }
@@ -318,7 +324,10 @@ function generateBehaviorInsights(
     insights.push({
       type: 'pattern',
       title: 'More Calm Than Anxious',
-      description: `${profile?.name || 'Your dog'} showed more calm moments than anxious ones today. Progress!`,
+      description:
+        tone === 'calm'
+          ? `${dogName} showed more calm moments than anxious ones today. Every step forward counts.`
+          : `${dogName} showed more calm moments than anxious ones today. Progress!`,
       momentIds: calmMoments.map((m) => m.id),
     });
   }
@@ -329,8 +338,84 @@ function generateBehaviorInsights(
     insights.push({
       type: 'pattern',
       title: 'Rest-Heavy Day',
-      description: 'Today had more rest than activity. Consider a more active day tomorrow if energy allows.',
+      description:
+        tone === 'upbeat'
+          ? 'Today had more rest than activity. Time to burn off that energy tomorrow!'
+          : 'Today had more rest than activity. Consider a more active day tomorrow if energy allows.',
       momentIds: [],
+    });
+  }
+
+  const sortedByTime = [...moments].sort(
+    (a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()
+  );
+  for (let i = 1; i < sortedByTime.length; i++) {
+    const prev = sortedByTime[i - 1];
+    const curr = sortedByTime[i];
+    const prevSession = sessions.find((s) => s.momentIds.includes(prev.id));
+    if (
+      prevSession?.type === 'rest' &&
+      (curr.mood === 'anxious' || curr.tags.includes('stress'))
+    ) {
+      insights.push({
+        type: 'pattern',
+        title: 'Reactivity After Rest',
+        description:
+          tone === 'calm'
+            ? `${dogName} seemed more reactive after a rest period. A gentle transition activity might help.`
+            : `${dogName} showed signs of reactivity after resting. Consider a decompression activity before high-stimulus situations.`,
+        momentIds: [prev.id, curr.id],
+      });
+      break;
+    }
+  }
+
+  const socialMoments = moments.filter((m) => m.tags.includes('social'));
+  const playfulMoments = moments.filter((m) => m.mood === 'playful');
+  if (socialMoments.length >= 2 && playfulMoments.length >= 2) {
+    insights.push({
+      type: 'win',
+      title: 'Social Success',
+      description:
+        tone === 'upbeat'
+          ? `${dogName} had a great social day! Multiple positive interactions and playful moments!`
+          : tone === 'protective'
+          ? `${dogName} handled multiple social encounters well. Building trust with others.`
+          : `${dogName} had positive social interactions today. Building confidence one encounter at a time.`,
+      momentIds: [...socialMoments.map((m) => m.id), ...playfulMoments.map((m) => m.id)].slice(0, 4),
+    });
+  }
+
+  if (profile?.triggers && profile.triggers.length > 0) {
+    const triggerMoments = moments.filter(
+      (m) => m.tags.includes('stress') || m.mood === 'anxious' || m.mood === 'alert'
+    );
+    if (triggerMoments.length > 0) {
+      const triggerList = profile.triggers.slice(0, 2).join(', ');
+      insights.push({
+        type: 'trigger',
+        title: 'Possible Trigger Encounter',
+        description:
+          tone === 'calm'
+            ? `${dogName} may have encountered known triggers (${triggerList}). Keep working on desensitization at a comfortable pace.`
+            : `${dogName} showed reactive behavior that may be linked to triggers: ${triggerList}.`,
+        momentIds: triggerMoments.map((m) => m.id).slice(0, 4),
+      });
+    }
+  }
+
+  const excitedMoments = moments.filter((m) => m.mood === 'excited');
+  if (excitedMoments.length > moments.length / 2 && moments.length >= 3) {
+    insights.push({
+      type: 'pattern',
+      title: 'High Energy Day',
+      description:
+        tone === 'upbeat'
+          ? `${dogName} was full of energy today! Lots of excitement - maybe channel that into a training game!`
+          : tone === 'calm'
+          ? `${dogName} had elevated energy today. Some decompression time might help settle.`
+          : `${dogName} was highly alert and energetic. Good awareness of surroundings.`,
+      momentIds: excitedMoments.map((m) => m.id).slice(0, 4),
     });
   }
 

@@ -451,6 +451,64 @@ test('social map card displays encountered entities with filter', async ({ page 
   await expect(page.getByTestId('entity-name')).toContainText('Sarah');
 });
 
+test('behavior insights card displays insights with correct types', async ({ page }) => {
+  await page.goto('http://127.0.0.1:3000/timeline');
+  
+  await page.evaluate(() => {
+    const now = new Date();
+    
+    localStorage.setItem('dogtracer_moments', JSON.stringify([
+      {
+        id: 'moment-insight-1',
+        photoDataUrl: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==',
+        timestamp: now.toISOString(),
+        timestampLocal: now.toLocaleString(),
+        createdAt: now.getTime(),
+        gps: null,
+        tags: ['training', 'stress'],
+        notes: '',
+        mood: 'calm',
+        moodConfidence: 80,
+        entityIds: [],
+        sessionId: null
+      },
+      {
+        id: 'moment-insight-2',
+        photoDataUrl: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==',
+        timestamp: new Date(now.getTime() + 1000).toISOString(),
+        timestampLocal: now.toLocaleString(),
+        createdAt: now.getTime() + 1000,
+        gps: null,
+        tags: ['training'],
+        notes: '',
+        mood: 'anxious',
+        moodConfidence: 75,
+        entityIds: [],
+        sessionId: null
+      }
+    ]));
+    
+    localStorage.setItem('dogtracer_dog_profile', JSON.stringify({
+      id: 'profile_test',
+      name: 'Max',
+      age: '3 years',
+      temperament: ['social', 'curious'],
+      triggers: ['bicycles'],
+      goals: ['leash manners'],
+      createdAt: Date.now(),
+      updatedAt: Date.now()
+    }));
+  });
+  
+  await page.reload();
+  
+  await expect(page.getByTestId('behavior-insights-card')).toBeVisible();
+  await expect(page.getByTestId('behavior-insights-title')).toContainText('Behavior Insights');
+  await expect(page.getByTestId('behavior-insight').first()).toBeVisible();
+  await expect(page.getByTestId('insight-title').first()).toBeVisible();
+  await expect(page.getByTestId('insight-description').first()).toBeVisible();
+});
+
 test('social map entity card shows encounter details and opens moments modal', async ({ page }) => {
   await page.goto('http://127.0.0.1:3000/timeline');
   

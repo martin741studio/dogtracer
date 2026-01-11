@@ -3,13 +3,14 @@
 import { useState, useEffect } from 'react';
 import { getMomentsByDate, getMomentById, type Moment } from '../lib/moments';
 import { rebuildSessionsForDate, getSessionsByDate, type Session } from '../lib/sessions';
-import { generateDailySummary, type OverviewSection, type SummaryTone, type TimelineHighlight, type SocialMapEntry } from '../lib/summary';
+import { generateDailySummary, type OverviewSection, type SummaryTone, type TimelineHighlight, type SocialMapEntry, type BehaviorInsight } from '../lib/summary';
 import MomentCard from '../components/MomentCard';
 import MomentDetailModal from '../components/MomentDetailModal';
 import SessionCard from '../components/SessionCard';
 import OverviewCard from '../components/OverviewCard';
 import TimelineHighlightsCard from '../components/TimelineHighlightsCard';
 import SocialMapCard from '../components/SocialMapCard';
+import BehaviorInsightsCard from '../components/BehaviorInsightsCard';
 
 function formatDateForInput(date: Date): string {
   return date.toISOString().split('T')[0];
@@ -44,6 +45,7 @@ export default function Timeline() {
   const [overview, setOverview] = useState<OverviewSection | null>(null);
   const [timelineHighlights, setTimelineHighlights] = useState<TimelineHighlight[]>([]);
   const [socialMap, setSocialMap] = useState<SocialMapEntry[]>([]);
+  const [behaviorInsights, setBehaviorInsights] = useState<BehaviorInsight[]>([]);
   const [summaryTone, setSummaryTone] = useState<SummaryTone>('upbeat');
   const [dogName, setDogName] = useState<string>('Your Dog');
 
@@ -60,6 +62,7 @@ export default function Timeline() {
       setOverview(summary.overview);
       setTimelineHighlights(summary.timelineHighlights);
       setSocialMap(summary.socialMap);
+      setBehaviorInsights(summary.behaviorInsights);
       setSummaryTone(summary.tone);
       setDogName(summary.dogName);
     } else {
@@ -67,6 +70,7 @@ export default function Timeline() {
       setOverview(null);
       setTimelineHighlights([]);
       setSocialMap([]);
+      setBehaviorInsights([]);
     }
     setIsLoading(false);
   }, [selectedDate]);
@@ -177,6 +181,14 @@ export default function Timeline() {
             {socialMap.length > 0 && (
               <SocialMapCard
                 socialMap={socialMap}
+                tone={summaryTone}
+                onMomentClick={handleMomentClick}
+              />
+            )}
+
+            {behaviorInsights.length > 0 && (
+              <BehaviorInsightsCard
+                insights={behaviorInsights}
                 tone={summaryTone}
                 onMomentClick={handleMomentClick}
               />
