@@ -149,3 +149,18 @@ Thread: https://ampcode.com/threads/T-019bad40-18e1-714d-a600-6e63af1ea005
   - LabeledEntity extends DetectedEntity with displayLabel and optional entityId
   - Use data-testid="primary-dog-indicator" and "other-dog-indicator" for test selectors
 ---
+
+## 2026-01-11 - US-008
+Thread: https://ampcode.com/threads/T-019bad42-ca40-72da-b99c-0119bb106a06
+- Implemented human labeling for detected entities with visual indicators on photos
+- Files changed:
+  - src/app/lib/labeling.ts (added getHumanDisplayLabel, getHumanLabelColor, isHumanLabel functions)
+  - src/app/components/DetectionOverlay.tsx (updated to render human detection boxes with green color and 👤 indicator)
+  - scripts/ralph/smoke.spec.ts (added test for person-indicator)
+- **Learnings for future iterations:**
+  - Humans use [PERSON_1], [PERSON_2] labels with green color (#10b981)
+  - getHumanDisplayLabel() resolves [PERSON_N] to named entity if available
+  - Privacy preserved: no automatic face recognition or identity guessing
+  - Human indicators use data-testid="person-indicator" for test selectors
+  - labelDetectedEntities() now handles both dog and human types
+---
