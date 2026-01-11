@@ -3,12 +3,13 @@
 import { useState, useEffect } from 'react';
 import { getMomentsByDate, getMomentById, type Moment } from '../lib/moments';
 import { rebuildSessionsForDate, getSessionsByDate, type Session } from '../lib/sessions';
-import { generateDailySummary, type OverviewSection, type SummaryTone, type TimelineHighlight } from '../lib/summary';
+import { generateDailySummary, type OverviewSection, type SummaryTone, type TimelineHighlight, type SocialMapEntry } from '../lib/summary';
 import MomentCard from '../components/MomentCard';
 import MomentDetailModal from '../components/MomentDetailModal';
 import SessionCard from '../components/SessionCard';
 import OverviewCard from '../components/OverviewCard';
 import TimelineHighlightsCard from '../components/TimelineHighlightsCard';
+import SocialMapCard from '../components/SocialMapCard';
 
 function formatDateForInput(date: Date): string {
   return date.toISOString().split('T')[0];
@@ -42,6 +43,7 @@ export default function Timeline() {
   const [viewMode, setViewMode] = useState<'sessions' | 'moments'>('sessions');
   const [overview, setOverview] = useState<OverviewSection | null>(null);
   const [timelineHighlights, setTimelineHighlights] = useState<TimelineHighlight[]>([]);
+  const [socialMap, setSocialMap] = useState<SocialMapEntry[]>([]);
   const [summaryTone, setSummaryTone] = useState<SummaryTone>('upbeat');
   const [dogName, setDogName] = useState<string>('Your Dog');
 
@@ -57,12 +59,14 @@ export default function Timeline() {
       const summary = generateDailySummary(selectedDate);
       setOverview(summary.overview);
       setTimelineHighlights(summary.timelineHighlights);
+      setSocialMap(summary.socialMap);
       setSummaryTone(summary.tone);
       setDogName(summary.dogName);
     } else {
       setSessions([]);
       setOverview(null);
       setTimelineHighlights([]);
+      setSocialMap([]);
     }
     setIsLoading(false);
   }, [selectedDate]);
@@ -165,6 +169,14 @@ export default function Timeline() {
             {timelineHighlights.length > 0 && (
               <TimelineHighlightsCard
                 highlights={timelineHighlights}
+                tone={summaryTone}
+                onMomentClick={handleMomentClick}
+              />
+            )}
+
+            {socialMap.length > 0 && (
+              <SocialMapCard
+                socialMap={socialMap}
                 tone={summaryTone}
                 onMomentClick={handleMomentClick}
               />

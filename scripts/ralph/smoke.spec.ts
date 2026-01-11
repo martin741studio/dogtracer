@@ -365,3 +365,175 @@ test('timeline highlights card displays session highlights', async ({ page }) =>
   await expect(page.getByTestId('highlight-time-range').first()).toBeVisible();
   await expect(page.getByTestId('highlight-description').first()).toBeVisible();
 });
+
+test('social map card displays encountered entities with filter', async ({ page }) => {
+  await page.goto('http://127.0.0.1:3000/timeline');
+  
+  await page.evaluate(() => {
+    const now = new Date();
+    
+    localStorage.setItem('dogtracer_entities', JSON.stringify([
+      {
+        id: 'entity-dog-1',
+        type: 'dog',
+        name: 'Max',
+        notes: '',
+        createdAt: Date.now(),
+        updatedAt: Date.now(),
+        metadata: {
+          breed: 'Labrador',
+          sex: 'male',
+          size: 'large',
+          relationship: 'friend',
+          isPrimary: false
+        }
+      },
+      {
+        id: 'entity-human-1',
+        type: 'human',
+        name: 'Sarah',
+        notes: '',
+        createdAt: Date.now(),
+        updatedAt: Date.now(),
+        metadata: {
+          relationship: 'neighbor'
+        }
+      }
+    ]));
+
+    localStorage.setItem('dogtracer_moments', JSON.stringify([
+      {
+        id: 'moment-social-1',
+        photoDataUrl: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==',
+        timestamp: now.toISOString(),
+        timestampLocal: now.toLocaleString(),
+        createdAt: now.getTime(),
+        gps: null,
+        tags: ['social'],
+        notes: '',
+        mood: 'playful',
+        moodConfidence: 85,
+        entityIds: ['entity-dog-1', 'entity-human-1'],
+        sessionId: null
+      }
+    ]));
+    
+    localStorage.setItem('dogtracer_dog_profile', JSON.stringify({
+      id: 'profile_test',
+      name: 'Luna',
+      age: '2 years',
+      temperament: ['social', 'curious'],
+      triggers: [],
+      goals: [],
+      createdAt: Date.now(),
+      updatedAt: Date.now()
+    }));
+  });
+  
+  await page.reload();
+  
+  await expect(page.getByTestId('social-map-card')).toBeVisible();
+  await expect(page.getByTestId('social-map-title')).toContainText('Social Map');
+  await expect(page.getByTestId('social-map-count')).toBeVisible();
+  await expect(page.getByTestId('social-map-filter')).toBeVisible();
+  await expect(page.getByTestId('filter-all')).toBeVisible();
+  await expect(page.getByTestId('filter-dogs')).toBeVisible();
+  await expect(page.getByTestId('filter-humans')).toBeVisible();
+  await expect(page.getByTestId('social-map-entity-card')).toHaveCount(2);
+  
+  // Test filter
+  await page.getByTestId('filter-dogs').click();
+  await expect(page.getByTestId('social-map-entity-card')).toHaveCount(1);
+  await expect(page.getByTestId('entity-name')).toContainText('Max');
+  
+  await page.getByTestId('filter-humans').click();
+  await expect(page.getByTestId('social-map-entity-card')).toHaveCount(1);
+  await expect(page.getByTestId('entity-name')).toContainText('Sarah');
+});
+
+test('social map entity card shows encounter details and opens moments modal', async ({ page }) => {
+  await page.goto('http://127.0.0.1:3000/timeline');
+  
+  await page.evaluate(() => {
+    const now = new Date();
+    const earlier = new Date(now.getTime() - 60 * 60 * 1000);
+    
+    localStorage.setItem('dogtracer_entities', JSON.stringify([
+      {
+        id: 'entity-dog-test',
+        type: 'dog',
+        name: 'Buddy',
+        notes: '',
+        createdAt: Date.now(),
+        updatedAt: Date.now(),
+        metadata: {
+          breed: 'Golden Retriever',
+          sex: 'male',
+          size: 'large',
+          relationship: 'friend',
+          isPrimary: false
+        }
+      }
+    ]));
+
+    localStorage.setItem('dogtracer_moments', JSON.stringify([
+      {
+        id: 'moment-buddy-1',
+        photoDataUrl: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==',
+        timestamp: earlier.toISOString(),
+        timestampLocal: earlier.toLocaleString(),
+        createdAt: earlier.getTime(),
+        gps: null,
+        tags: ['walk'],
+        notes: '',
+        mood: 'calm',
+        moodConfidence: 80,
+        entityIds: ['entity-dog-test'],
+        sessionId: null
+      },
+      {
+        id: 'moment-buddy-2',
+        photoDataUrl: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==',
+        timestamp: now.toISOString(),
+        timestampLocal: now.toLocaleString(),
+        createdAt: now.getTime(),
+        gps: null,
+        tags: ['play'],
+        notes: '',
+        mood: 'playful',
+        moodConfidence: 90,
+        entityIds: ['entity-dog-test'],
+        sessionId: null
+      }
+    ]));
+    
+    localStorage.setItem('dogtracer_dog_profile', JSON.stringify({
+      id: 'profile_test',
+      name: 'Luna',
+      age: '2 years',
+      temperament: ['social'],
+      triggers: [],
+      goals: [],
+      createdAt: Date.now(),
+      updatedAt: Date.now()
+    }));
+  });
+  
+  await page.reload();
+  
+  await expect(page.getByTestId('social-map-card')).toBeVisible();
+  const entityCard = page.getByTestId('social-map-entity-card').first();
+  await expect(entityCard).toBeVisible();
+  await expect(page.getByTestId('entity-name')).toContainText('Buddy');
+  await expect(page.getByTestId('entity-encounter-count')).toContainText('2 moments');
+  await expect(page.getByTestId('entity-outcome')).toContainText('friend');
+  
+  // Click to open moments modal
+  await entityCard.click();
+  await expect(page.getByTestId('entity-moments-modal')).toBeVisible();
+  await expect(page.getByTestId('entity-moment-thumbnail')).toHaveCount(2);
+  
+  // Close modal
+  await page.getByTestId('close-entity-moments').click();
+  await expect(page.getByTestId('entity-moments-modal')).not.toBeVisible();
+});
