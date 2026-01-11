@@ -346,3 +346,20 @@ Thread: https://ampcode.com/threads/T-019bad69-2898-76a8-a0ad-ff27d8d4acec
   - Training progress wins show matched goal from profile if available
   - Trigger insights reference known triggers from dog profile
 ---
+
+## 2026-01-11 - US-019
+Thread: https://ampcode.com/threads/T-019bad6f-5ee2-7648-982e-c9f75f420d87
+- Implemented Recommendations section for daily summary display
+- Files changed:
+  - src/app/components/RecommendationsCard.tsx (new - recommendations display with priority colors)
+  - src/app/timeline/page.tsx (integrated RecommendationsCard, added recommendations state)
+  - scripts/ralph/smoke.spec.ts (added test for recommendations card)
+- **Learnings for future iterations:**
+  - RecommendationsCard displays after BehaviorInsightsCard on timeline page
+  - Recommendations have 3 priority levels: high (red), medium (amber), low (green)
+  - Priority icons use colored circles: 🔴 high, 🟡 medium, 🟢 low
+  - generateRecommendations() already exists in summary.ts (lines 425-499) - returns up to 7 recommendations
+  - Recommendation triggers: no walks → "Add Walk", trigger detected → "Work on Trigger Management", no training → "Training Time", excess rest → "Increase Activity", no social → "Social Opportunity"
+  - Summary tone colors applied to card header (same as other summary cards)
+  - Test data-testid patterns: recommendations-card, recommendations-title, recommendations-count, recommendation, recommendation-title, recommendation-description, recommendation-priority, recommendation-priority-icon
+---
